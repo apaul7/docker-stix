@@ -21,7 +21,9 @@ WORKDIR /opt
 ## add giggle(find a version?)
 RUN git clone https://github.com/ryanlayer/giggle.git \
   && cd giggle \
-  && make
+  && make \
+  && ln -s /opt/giggle/bin/giggle /usr/bin/
+
 RUN wget http://www.sqlite.org/2017/sqlite-amalgamation-3170000.zip \
   && unzip sqlite-amalgamation-3170000.zip
 
