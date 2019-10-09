@@ -6,17 +6,41 @@ LABEL \
   
 RUN apt-get update && apt-get install -y \
   autoconf \
+  bzip2 \
   gcc \
+  g++ \
   git \
   libbz2-dev \
   libcurl4-openssl-dev \
   libssl-dev \
+  liblzma-dev \
   make \
+  ncurses-dev \
   ruby \
   wget \
   zlib1g-dev
 
+# add samtools
+ENV SAMTOOLS_INSTALL_DIR=/opt/samtools
+
+WORKDIR /tmp
+RUN wget https://github.com/samtools/samtools/releases/download/1.9/samtools-1.9.tar.bz2 && \
+  tar --bzip2 -xf samtools-1.9.tar.bz2
+
+WORKDIR /tmp/samtools-1.9
+RUN ./configure --enable-plugins --prefix=$SAMTOOLS_INSTALL_DIR && \
+  make all all-htslib && \
+  make install install-htslib
+
+WORKDIR /
+RUN ln -s $SAMTOOLS_INSTALL_DIR/bin/samtools /usr/bin/samtools && \
+  rm -rf /tmp/samtools-1.9
+
 WORKDIR /opt
+# add excord
+RUN wget -O excord https://github.com/brentp/excord/releases/download/v0.2.2/excord_linux64 \
+  && chmod +x excord \
+  && ln -s excord /usr/bin/
 
 ## add giggle(find a version?)
 RUN git clone https://github.com/ryanlayer/giggle.git \
